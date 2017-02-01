@@ -5,7 +5,7 @@ import com.mshmidov.chains.random.WeightedRandom;
 
 import java.util.Optional;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.requireNonNull;
 
 final class ImmutableChain<T> implements MarkovChain<T> {
 
@@ -18,9 +18,9 @@ final class ImmutableChain<T> implements MarkovChain<T> {
 
     ImmutableChain(int order, T terminalSymbol, ImmutableMap<Key<T>, WeightedRandom<T>> chain, WeightedRandom<Key<T>> startingKeys) {
         this.order = order;
-        this.terminalSymbol = terminalSymbol;
-        this.chain = chain;
-        this.startingKeys = startingKeys;
+        this.terminalSymbol = requireNonNull(terminalSymbol);
+        this.chain = requireNonNull(chain);
+        this.startingKeys = requireNonNull(startingKeys);
     }
 
     @Override
@@ -40,7 +40,6 @@ final class ImmutableChain<T> implements MarkovChain<T> {
 
     @Override
     public Optional<WeightedRandom<T>> getNextElements(Key<T> key) {
-        checkArgument(key.order() == order);
         return Optional.ofNullable(chain.get(key));
     }
 

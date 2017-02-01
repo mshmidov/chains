@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ArrayKeyTest {
 
     @Test
-    @DisplayName("when appending new element to the key")
+    @DisplayName("should new element to the key")
     public void shouldAppendElement() throws Exception {
         // given
         final ArrayKey<Character> key = new ArrayKey<>(new Character[] {'a', 'b', 'c'});
