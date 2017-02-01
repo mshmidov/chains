@@ -2,6 +2,7 @@ package com.mshmidov.chains.chain;
 
 import com.google.common.collect.ImmutableMap;
 import com.mshmidov.chains.random.WeightedRandom;
+import com.mshmidov.chains.sequence.BoundedChainIterator;
 
 import java.util.Optional;
 
@@ -41,6 +42,11 @@ final class ImmutableChain<T> implements MarkovChain<T> {
     @Override
     public Optional<WeightedRandom<T>> getNextElements(Key<T> key) {
         return Optional.ofNullable(chain.get(key));
+    }
+
+    @Override
+    public Iterable<T> asIterable(long maximumElements) {
+        return () -> new BoundedChainIterator<>(this, maximumElements);
     }
 
 }
