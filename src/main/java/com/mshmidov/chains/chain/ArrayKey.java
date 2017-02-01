@@ -4,7 +4,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 
 final class ArrayKey<T> implements Key<T> {
 
@@ -20,7 +20,7 @@ final class ArrayKey<T> implements Key<T> {
     }
 
     @Override
-    public Collection<T> values() {
+    public List<T> values() {
         return ImmutableList.copyOf(values);
     }
 
