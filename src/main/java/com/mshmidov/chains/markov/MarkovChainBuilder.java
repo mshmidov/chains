@@ -1,9 +1,9 @@
-package com.mshmidov.chains.chain;
+package com.mshmidov.chains.markov;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multiset;
-import com.mshmidov.chains.random.WeightedRandom;
+import com.mshmidov.chains.util.DisplacementBuffer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +20,11 @@ public final class MarkovChainBuilder<T> {
 
     private final Multiset<Key<T>> startingKeys = HashMultiset.create();
 
-    public MarkovChainBuilder(int order, T terminalSymbol) {
+    public static <T> MarkovChainBuilder<T> newInstance(int order, T terminalSymbol) {
+        return new MarkovChainBuilder<>(order, terminalSymbol);
+    }
+
+    private MarkovChainBuilder(int order, T terminalSymbol) {
         this.order = order;
         this.terminalSymbol = terminalSymbol;
     }
@@ -74,9 +78,9 @@ public final class MarkovChainBuilder<T> {
 
         final ImmutableMap.Builder<Key<T>, WeightedRandom<T>> builder = ImmutableMap.builder();
 
-        chain.forEach((key, multiset) -> builder.put(key, WeightedRandom.fromMultiset(multiset)));
+        chain.forEach((key, multiset) -> builder.put(key, SortedMapWeightedRandom.fromMultiset(multiset)));
 
-        return new ImmutableChain<>(order, terminalSymbol, builder.build(), WeightedRandom.fromMultiset(startingKeys));
+        return new ImmutableChain<>(order, terminalSymbol, builder.build(), SortedMapWeightedRandom.fromMultiset(startingKeys));
     }
 
 }

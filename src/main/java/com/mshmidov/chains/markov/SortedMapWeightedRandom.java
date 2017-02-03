@@ -1,17 +1,17 @@
-package com.mshmidov.chains.random;
+package com.mshmidov.chains.markov;
 
 import com.google.common.collect.ImmutableSortedMap;
 import com.google.common.collect.Multiset;
 
 import static java.util.Objects.requireNonNull;
 
-public final class WeightedRandom<T> {
+final class SortedMapWeightedRandom<T> implements WeightedRandom<T> {
 
     private final ImmutableSortedMap<Double, T> values;
 
     private final double total;
 
-    private WeightedRandom(Builder<T> builder) {
+    private SortedMapWeightedRandom(Builder<T> builder) {
         this.total = builder.total;
         this.values = builder.values.build();
     }
@@ -28,10 +28,12 @@ public final class WeightedRandom<T> {
         return builder.build();
     }
 
+    @Override
     public T choose(double random) {
         return requireNonNull(values.ceilingEntry(random * total).getValue());
     }
 
+    @Override
     public ImmutableSortedMap<Double, T> values() {
         return values;
     }
@@ -59,7 +61,7 @@ public final class WeightedRandom<T> {
         }
 
         public WeightedRandom<T> build() {
-            return new WeightedRandom<>(this);
+            return new SortedMapWeightedRandom<>(this);
         }
     }
 

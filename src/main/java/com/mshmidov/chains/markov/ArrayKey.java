@@ -1,4 +1,4 @@
-package com.mshmidov.chains.chain;
+package com.mshmidov.chains.markov;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;

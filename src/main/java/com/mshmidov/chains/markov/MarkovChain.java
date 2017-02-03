@@ -1,6 +1,4 @@
-package com.mshmidov.chains.chain;
-
-import com.mshmidov.chains.random.WeightedRandom;
+package com.mshmidov.chains.markov;
 
 import java.util.Optional;
 

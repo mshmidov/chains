@@ -1,4 +1,4 @@
-package com.mshmidov.chains.chain;
+package com.mshmidov.chains.markov;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.mshmidov.chains.chain;
+package com.mshmidov.chains.util;
 
 
 import com.google.common.collect.ImmutableList;

@@ -1,8 +1,8 @@
-package com.mshmidov.chains.chain;
+package com.mshmidov.chains.util;
 
 import java.util.ArrayDeque;
 
-final class DisplacementBuffer<T> {
+public final class DisplacementBuffer<T> {
 
     private final ArrayDeque<T> data;
 
@@ -25,7 +25,7 @@ final class DisplacementBuffer<T> {
     }
 
     public T[] getData() {
-        return ((T[]) data.toArray());
+        return (T[]) data.toArray();
     }
 
     public void clear() {

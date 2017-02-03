@@ -1,4 +1,4 @@
-package com.mshmidov.chains.chain;
+package com.mshmidov.chains.markov;
 
 import com.google.common.collect.ImmutableCollection;
 import org.junit.jupiter.api.DisplayName;
@@ -16,7 +16,7 @@ public class MarkovChainBuilderTest {
         final String terminal = " ";
         final String[] data = new String[] {"a", "b", "c", "d", "e", "f", "g", " ", "z", " ", "a", "z", " ", "0", "1", "2", "3", "4", " ", "5", "6", "7"};
 
-        final MarkovChainBuilder<String> builder = new MarkovChainBuilder<>(order, terminal);
+        final MarkovChainBuilder<String> builder = MarkovChainBuilder.newInstance(order, terminal);
 
         // when
         final MarkovChain<String> chain = builder.populate(data).build();

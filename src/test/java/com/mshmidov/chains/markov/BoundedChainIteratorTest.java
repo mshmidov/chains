@@ -1,13 +1,11 @@
-package com.mshmidov.chains.sequence;
+package com.mshmidov.chains.markov;
 
 import com.google.common.base.Joiner;
-import com.mshmidov.chains.chain.MarkovChain;
-import com.mshmidov.chains.chain.MarkovChainBuilder;
-import org.apache.commons.lang3.ArrayUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 
+import static org.apache.commons.lang3.ArrayUtils.toObject;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -34,7 +32,7 @@ public class BoundedChainIteratorTest {
     public void shouldGenerateSequenceUpToTerminalSymbol() {
         // given
         final String sequence = "abcdefg";
-        final MarkovChain<Character> chain = new MarkovChainBuilder<>(3, Character.MIN_VALUE).populate(ArrayUtils.toObject(sequence.toCharArray())).build();
+        final MarkovChain<Character> chain = MarkovChainBuilder.newInstance(3, Character.MIN_VALUE).populate(toObject(sequence.toCharArray())).build();
         final BoundedChainIterator<Character> iterator = new BoundedChainIterator<>(chain, 999);
 
         // when
@@ -50,7 +48,7 @@ public class BoundedChainIteratorTest {
         // given
         final String sequence = "abcdefg";
         final int limit = 5;
-        final MarkovChain<Character> chain = new MarkovChainBuilder<>(3, Character.MIN_VALUE).populate(ArrayUtils.toObject(sequence.toCharArray())).build();
+        final MarkovChain<Character> chain = MarkovChainBuilder.newInstance(3, Character.MIN_VALUE).populate(toObject(sequence.toCharArray())).build();
         final BoundedChainIterator<Character> iterator = new BoundedChainIterator<>(chain, limit);
 
         // when

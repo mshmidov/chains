@@ -1,8 +1,6 @@
-package com.mshmidov.chains.chain;
+package com.mshmidov.chains.markov;
 
 import com.google.common.collect.ImmutableMap;
-import com.mshmidov.chains.random.WeightedRandom;
-import com.mshmidov.chains.sequence.BoundedChainIterator;
 
 import java.util.Optional;
 

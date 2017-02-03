@@ -1,7 +1,4 @@
-package com.mshmidov.chains.sequence;
-
-import com.mshmidov.chains.chain.Key;
-import com.mshmidov.chains.chain.MarkovChain;
+package com.mshmidov.chains.markov;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -10,7 +7,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.requireNonNull;
 
-public final class BoundedChainIterator<T> implements Iterator<T> {
+final class BoundedChainIterator<T> implements Iterator<T> {
 
     private final ThreadLocalRandom random = ThreadLocalRandom.current();
 

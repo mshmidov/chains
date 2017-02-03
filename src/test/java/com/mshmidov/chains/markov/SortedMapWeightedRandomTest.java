@@ -1,4 +1,4 @@
-package com.mshmidov.chains.random;
+package com.mshmidov.chains.markov;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultiset;
@@ -14,20 +14,20 @@ import static com.google.common.truth.Truth.assertWithMessage;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
-@DisplayName("WeightedRandom")
-public class WeightedRandomTest {
+@DisplayName("SortedMapWeightedRandom")
+public class SortedMapWeightedRandomTest {
 
 
     @TestFactory
     @DisplayName("should be created")
     Collection<DynamicTest> shouldBeCreated() {
         return ImmutableList.of(
-                dynamicTest("with builder", () -> assertCorrectValues(WeightedRandom.<Character>builder()
+                dynamicTest("with builder", () -> assertCorrectValues(SortedMapWeightedRandom.<Character>builder()
                         .add(5, 'a')
                         .add(3, 'b')
                         .add(2, 'c')
                         .build())),
-                dynamicTest("from multiset", () -> assertCorrectValues(WeightedRandom.fromMultiset(ImmutableMultiset.<Character>builder()
+                dynamicTest("from multiset", () -> assertCorrectValues(SortedMapWeightedRandom.fromMultiset(ImmutableMultiset.<Character>builder()
                         .add('a', 'a', 'a', 'a', 'a')
                         .add('b', 'b', 'b')
                         .add('c', 'c')
@@ -39,7 +39,7 @@ public class WeightedRandomTest {
     @DisplayName("should choose value")
     void shouldChooseValue() {
         // given
-        final WeightedRandom<Character> weightedRandom = WeightedRandom.<Character>builder()
+        final WeightedRandom<Character> weightedRandom = SortedMapWeightedRandom.<Character>builder()
                 .add(5, 'a')
                 .add(3, 'b')
                 .add(2, 'c')
