@@ -5,9 +5,9 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multiset;
 import com.mshmidov.chains.random.WeightedRandom;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -27,17 +27,41 @@ public final class MarkovChainBuilder<T> {
 
     public MarkovChainBuilder<T> populate(T[] elements) {
 
-        for (int i = 0; i <= elements.length - order; i++) {
-            final Key<T> key = new ArrayKey<>(Arrays.copyOfRange(elements, i, i + order));
-            final T value = (i < elements.length - order) ? elements[i + order] : terminalSymbol;
-            put(key, value);
+        final DisplacementBuffer<T> keyBuffer = new DisplacementBuffer<>(order);
 
-            if (i == 0) {
+        boolean keyBufferWasEmpty = true;
+
+        for (T element : elements) {
+            keyBufferWasEmpty = processElement(keyBuffer, element, keyBufferWasEmpty);
+        }
+
+        if (!Objects.equals(elements[elements.length - 1], terminalSymbol)) {
+            processElement(keyBuffer, terminalSymbol, keyBufferWasEmpty);
+        }
+
+        return this;
+    }
+
+    private boolean processElement(DisplacementBuffer<T> keyBuffer, T element, boolean keyBufferWasEmpty) {
+        final boolean terminalElement = Objects.equals(element, terminalSymbol);
+        final boolean keyBufferFull = keyBuffer.getDataSize() == order;
+
+        if (keyBufferFull) {
+            final ArrayKey<T> key = new ArrayKey<>(keyBuffer.getData());
+            put(key, element);
+
+            if (keyBufferWasEmpty) {
                 startingKeys.add(key);
             }
         }
 
-        return this;
+        if (terminalElement) {
+            keyBuffer.clear();
+        } else {
+            keyBuffer.add(element);
+        }
+
+        return !keyBufferFull;
     }
 
     private void put(Key<T> key, T value) {
