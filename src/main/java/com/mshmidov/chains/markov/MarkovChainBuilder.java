@@ -29,7 +29,7 @@ public final class MarkovChainBuilder<T> {
         this.terminalSymbol = terminalSymbol;
     }
 
-    public MarkovChainBuilder<T> populate(T[] elements) {
+    public MarkovChainBuilder<T> populate(Iterable<T> elements) {
 
         final DisplacementBuffer<T> keyBuffer = new DisplacementBuffer<>(order);
 
@@ -39,11 +39,18 @@ public final class MarkovChainBuilder<T> {
             keyBufferWasEmpty = processElement(keyBuffer, element, keyBufferWasEmpty);
         }
 
-        if (!Objects.equals(elements[elements.length - 1], terminalSymbol)) {
-            processElement(keyBuffer, terminalSymbol, keyBufferWasEmpty);
-        }
+        processElement(keyBuffer, terminalSymbol, keyBufferWasEmpty);
 
         return this;
+    }
+
+    public MarkovChain<T> build() {
+
+        final ImmutableMap.Builder<Key<T>, WeightedRandom<T>> builder = ImmutableMap.builder();
+
+        chain.forEach((key, multiset) -> builder.put(key, SortedMapWeightedRandom.fromMultiset(multiset)));
+
+        return new ImmutableChain<>(order, terminalSymbol, builder.build(), SortedMapWeightedRandom.fromMultiset(startingKeys));
     }
 
     private boolean processElement(DisplacementBuffer<T> keyBuffer, T element, boolean keyBufferWasEmpty) {
@@ -72,15 +79,6 @@ public final class MarkovChainBuilder<T> {
         checkArgument(key.order() == order);
 
         chain.computeIfAbsent(key, any -> HashMultiset.create()).add(value);
-    }
-
-    public MarkovChain<T> build() {
-
-        final ImmutableMap.Builder<Key<T>, WeightedRandom<T>> builder = ImmutableMap.builder();
-
-        chain.forEach((key, multiset) -> builder.put(key, SortedMapWeightedRandom.fromMultiset(multiset)));
-
-        return new ImmutableChain<>(order, terminalSymbol, builder.build(), SortedMapWeightedRandom.fromMultiset(startingKeys));
     }
 
 }

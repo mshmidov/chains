@@ -58,7 +58,7 @@ final class BoundedChainIterator<T> implements Iterator<T> {
 
         if (returnedElements < markovChain.order()) {
             // returning elements from starting key
-            nextElement = nextKey.values().get(Math.toIntExact(returnedElements));
+            nextElement = nextKey.values()[(Math.toIntExact(returnedElements))];
 
         } else {
             nextElement = markovChain.getNextElements(nextKey).map(choice -> choice.choose(random.nextDouble())).orElse(markovChain.terminalSymbol());

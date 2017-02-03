@@ -1,10 +1,8 @@
 package com.mshmidov.chains.markov;
 
 import com.google.common.base.Joiner;
-import com.google.common.collect.ImmutableList;
 
 import java.util.Arrays;
-import java.util.List;
 
 final class ArrayKey<T> implements Key<T> {
 
@@ -20,8 +18,8 @@ final class ArrayKey<T> implements Key<T> {
     }
 
     @Override
-    public List<T> values() {
-        return ImmutableList.copyOf(values);
+    public T[] values() {
+        return Arrays.copyOf(values, values.length);
     }
 
     @Override

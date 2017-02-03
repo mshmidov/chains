@@ -1,10 +1,10 @@
 package com.mshmidov.chains.markov;
 
 
-import com.google.common.collect.ImmutableList;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static com.google.common.truth.Truth.assertWithMessage;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -21,12 +21,13 @@ public class ArrayKeyTest {
 
         // then
         assertAll("new key",
-                () -> assertEquals(ImmutableList.of('b', 'c', 'd'), newKey.values(), "should append new element and shift one element left"),
+                () -> assertWithMessage("should append new element and shift one element left")
+                        .that(newKey.values()).isEqualTo(new Character[] {'b', 'c', 'd'}),
                 () -> assertEquals(key.order(), newKey.order(), "should have the same order as old one")
         );
 
         assertAll("old key",
-                () -> assertEquals(ImmutableList.of('a', 'b', 'c'), key.values(), "should remain unchanged")
+                () -> assertWithMessage("should remain unchanged").that(key.values()).isEqualTo(new Character[] {'a', 'b', 'c'})
         );
 
     }

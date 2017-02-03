@@ -5,7 +5,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 
-import static org.apache.commons.lang3.ArrayUtils.toObject;
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -32,8 +34,8 @@ public class BoundedChainIteratorTest {
     public void shouldGenerateSequenceUpToTerminalSymbol() {
         // given
         final String sequence = "abcdefg";
-        final MarkovChain<Character> chain = MarkovChainBuilder.newInstance(3, Character.MIN_VALUE).populate(toObject(sequence.toCharArray())).build();
-        final BoundedChainIterator<Character> iterator = new BoundedChainIterator<>(chain, 999);
+        final MarkovChain<String> chain = MarkovChainBuilder.newInstance(3, "z").populate(explode(sequence)).build();
+        final BoundedChainIterator<String> iterator = new BoundedChainIterator<>(chain, 999);
 
         // when
         final String result = Joiner.on("").join(iterator);
@@ -48,8 +50,8 @@ public class BoundedChainIteratorTest {
         // given
         final String sequence = "abcdefg";
         final int limit = 5;
-        final MarkovChain<Character> chain = MarkovChainBuilder.newInstance(3, Character.MIN_VALUE).populate(toObject(sequence.toCharArray())).build();
-        final BoundedChainIterator<Character> iterator = new BoundedChainIterator<>(chain, limit);
+        final MarkovChain<String> chain = MarkovChainBuilder.newInstance(3, "z").populate(explode(sequence)).build();
+        final BoundedChainIterator<String> iterator = new BoundedChainIterator<>(chain, limit);
 
         // when
         final String result = Joiner.on("").join(iterator);
@@ -57,4 +59,15 @@ public class BoundedChainIteratorTest {
         // then
         assertEquals(sequence.substring(0, limit), result);
     }
+
+    private static List<String> explode(String s) {
+        final List<String> result = new ArrayList<>();
+
+        for (char c : s.toCharArray()) {
+            result.add(new String(new char[] {c}));
+        }
+
+        return result;
+    }
 }
+

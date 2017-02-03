@@ -4,6 +4,9 @@ import com.google.common.collect.ImmutableCollection;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.google.common.truth.Truth.assertThat;
 
 public class MarkovChainBuilderTest {
@@ -14,7 +17,9 @@ public class MarkovChainBuilderTest {
         // given
         final int order = 3;
         final String terminal = " ";
-        final String[] data = new String[] {"a", "b", "c", "d", "e", "f", "g", " ", "z", " ", "a", "z", " ", "0", "1", "2", "3", "4", " ", "5", "6", "7"};
+
+
+        final List<String> data = explode("abcdefg z az  01234  567");
 
         final MarkovChainBuilder<String> builder = MarkovChainBuilder.newInstance(order, terminal);
 
@@ -41,5 +46,15 @@ public class MarkovChainBuilderTest {
 
     private static <T> Key<T> key(T... elements) {
         return new ArrayKey<>(elements);
+    }
+
+    private static List<String> explode(String s) {
+        final List<String> result = new ArrayList<>();
+
+        for (char c : s.toCharArray()) {
+            result.add(new String(new char[] {c}));
+        }
+
+        return result;
     }
 }
