@@ -1,5 +1,7 @@
 package com.isabaka.chains.markov;
 
+import java.util.Collection;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultiset;
 import org.junit.jupiter.api.DisplayName;
@@ -7,16 +9,12 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 
-import java.util.Collection;
-
-import static com.google.common.truth.Truth.assertThat;
-import static com.google.common.truth.Truth.assertWithMessage;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 @DisplayName("SortedMapWeightedRandom")
 public class SortedMapWeightedRandomTest {
-
 
     @TestFactory
     @DisplayName("should be created")
@@ -27,11 +25,12 @@ public class SortedMapWeightedRandomTest {
                         .add(3, 'b')
                         .add(2, 'c')
                         .build())),
-                dynamicTest("from multiset", () -> assertCorrectValues(SortedMapWeightedRandom.fromMultiset(ImmutableMultiset.<Character>builder()
-                        .add('a', 'a', 'a', 'a', 'a')
-                        .add('b', 'b', 'b')
-                        .add('c', 'c')
-                        .build())))
+                dynamicTest("from multiset",
+                        () -> assertCorrectValues(SortedMapWeightedRandom.fromMultiset(ImmutableMultiset.<Character>builder()
+                                .add('a', 'a', 'a', 'a', 'a')
+                                .add('b', 'b', 'b')
+                                .add('c', 'c')
+                                .build())))
         );
     }
 
@@ -58,9 +57,9 @@ public class SortedMapWeightedRandomTest {
 
     private static void assertCorrectValues(WeightedRandom<Character> weightedRandom) {
         assertAll(
-                () -> assertWithMessage("should contain correct entry for 'a'").that(weightedRandom.values().get(5d)).isEqualTo('a'),
-                () -> assertWithMessage("should contain correct entry for 'b'").that(weightedRandom.values().get(8d)).isEqualTo('b'),
-                () -> assertWithMessage("should contain correct entry for 'c'").that(weightedRandom.values().get(10d)).isEqualTo('c')
+                () -> assertThat(weightedRandom.values().get(5d)).as("should contain correct entry for 'a'").isEqualTo('a'),
+                () -> assertThat(weightedRandom.values().get(8d)).as("should contain correct entry for 'b'").isEqualTo('b'),
+                () -> assertThat(weightedRandom.values().get(10d)).as("should contain correct entry for 'c'").isEqualTo('c')
         );
     }
 

@@ -1,12 +1,12 @@
 package com.isabaka.chains.util;
 
+import java.util.function.Function;
+
 import com.google.common.base.Joiner;
-import com.google.common.truth.Truth;
-import com.isabaka.chains.util.StringIterator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import java.util.function.Function;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("StringIterator")
 public class StringIteratorTest {
@@ -23,7 +23,7 @@ public class StringIteratorTest {
         final String result = Joiner.on("").join(stringIterator);
 
         // then
-        Truth.assertThat(result).isEqualTo(string);
+        assertThat(result).isEqualTo(string);
 
     }
 }

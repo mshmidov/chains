@@ -24,6 +24,10 @@ public final class DisplacementBuffer<T> {
         return data.size();
     }
 
+    public boolean isFull() {
+        return data.size() >= size;
+    }
+
     public T[] getData() {
         return (T[]) data.toArray();
     }

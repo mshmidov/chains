@@ -1,17 +1,16 @@
 package com.isabaka.chains.util;
 
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.common.collect.ImmutableList;
-import com.isabaka.chains.util.DisplacementBuffer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static com.google.common.truth.Truth.assertThat;
 import static java.lang.Math.max;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 @DisplayName("DisplacementBuffer") class DisplacementBufferTest {
