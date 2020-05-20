@@ -1,7 +1,8 @@
-package com.mshmidov.chains.util;
+package com.isabaka.chains.util;
 
 
 import com.google.common.collect.ImmutableList;
+import com.isabaka.chains.util.DisplacementBuffer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;

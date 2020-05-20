@@ -1,4 +1,4 @@
-package com.mshmidov.chains.markov;
+package com.isabaka.chains.markov;
 
 import com.google.common.collect.ImmutableSortedMap;
 

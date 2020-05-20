@@ -1,9 +1,9 @@
-package com.mshmidov.chains.markov;
+package com.isabaka.chains.markov;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multiset;
-import com.mshmidov.chains.util.DisplacementBuffer;
+import com.isabaka.chains.util.DisplacementBuffer;
 
 import java.util.HashMap;
 import java.util.Map;

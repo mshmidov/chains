@@ -1,4 +1,4 @@
-package com.mshmidov.chains.util;
+package com.isabaka.chains.util;
 
 import java.util.function.Function;
 

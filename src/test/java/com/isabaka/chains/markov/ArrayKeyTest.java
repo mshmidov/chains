@@ -1,8 +1,8 @@
-package com.mshmidov.chains.markov;
+package com.isabaka.chains.markov;
 
 
+import org.junit.Test;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
 
 import static com.google.common.truth.Truth.assertWithMessage;
 import static org.junit.jupiter.api.Assertions.assertAll;

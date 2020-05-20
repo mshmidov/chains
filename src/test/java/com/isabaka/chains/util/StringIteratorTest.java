@@ -1,7 +1,8 @@
-package com.mshmidov.chains.util;
+package com.isabaka.chains.util;
 
 import com.google.common.base.Joiner;
 import com.google.common.truth.Truth;
+import com.isabaka.chains.util.StringIterator;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

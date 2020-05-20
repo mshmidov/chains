@@ -1,8 +1,8 @@
-package com.mshmidov.chains;
+package com.isabaka.chains;
 
 import com.google.common.collect.ImmutableSet;
-import com.mshmidov.chains.markov.MarkovChain;
-import com.mshmidov.chains.markov.MarkovChainBuilder;
+import com.isabaka.chains.markov.MarkovChain;
+import com.isabaka.chains.markov.MarkovChainBuilder;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 

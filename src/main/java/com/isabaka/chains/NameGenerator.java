@@ -1,9 +1,9 @@
-package com.mshmidov.chains;
+package com.isabaka.chains;
 
 import com.google.common.base.Joiner;
-import com.mshmidov.chains.markov.MarkovChain;
-import com.mshmidov.chains.markov.MarkovChainBuilder;
-import com.mshmidov.chains.util.IterableString;
+import com.isabaka.chains.markov.MarkovChain;
+import com.isabaka.chains.markov.MarkovChainBuilder;
+import com.isabaka.chains.util.IterableString;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
