@@ -1,11 +1,5 @@
 package com.isabaka.chains;
 
-import com.google.common.collect.ImmutableSet;
-import com.isabaka.chains.markov.MarkovChain;
-import com.isabaka.chains.markov.MarkovChainBuilder;
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -17,52 +11,50 @@ import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toList;
+import com.google.common.collect.ImmutableSet;
+import com.isabaka.chains.markov.Key;
+import com.isabaka.chains.markov.UnboundedMarkovChain;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import static org.apache.commons.lang3.StringUtils.isAlpha;
 
 public class PoemGenerator {
 
+    public static final ImmutableSet<String> PUNCTUATION = ImmutableSet.of(".", ",", ":", ";", "?", "!", "«", "»", "-", "…", "—");
+
     public static void main(String[] args) {
 
-        final MarkovChainBuilder<String> builder = MarkovChainBuilder.newInstance(2, ".");
-
-        final List<String> elements = Stream.of("/pop.txt", "/ryback.txt", "/rusl.txt")
-                .map(fileName -> PoemGenerator.class.getResource(fileName))
+        final UnboundedMarkovChain<String> markovChain = Stream.of("/pop.txt", "/ryback.txt", "/rusl.txt")
+                .map(PoemGenerator.class::getResource)
                 .map(PoemGenerator::readAllLines)
                 .flatMap(Collection::stream)
                 .flatMap(line -> Arrays.stream(ArrayUtils.add(StringUtils.splitByCharacterTypeCamelCase(line), System.lineSeparator())))
                 .filter(element -> element.equals(System.lineSeparator()) || !StringUtils.isBlank(element))
-                .collect(toList());
+                .collect(UnboundedMarkovChain.collector(2, "." + System.lineSeparator(), PoemGenerator::isStartingKey));
 
-        builder.populate(elements);
-
-        final MarkovChain<String> chain = builder.build();
-
-        IntStream.range(0, 25).forEach(i -> {
-
-            final StringBuilder verse = new StringBuilder();
-
-            final ImmutableSet<String> punctuation = ImmutableSet.of(",", ":", ";", "?", "!");
-
-            String previousElement = "";
-
-            for (String element : chain.asIterable(25L)) {
-
-                if ((isAlpha(previousElement) && !punctuation.contains(element)) || punctuation.contains(previousElement)) {
-                    verse.append(" ");
-                }
-
-                verse.append(element);
-
-                previousElement = element;
-            }
-
-            System.out.print(verse);
-            System.out.print(".");
-
-        });
+        IntStream.range(0, 25)
+                .mapToObj(i -> markovChain.stream(markovChain.randomStartingKey())
+                        .limit(35)
+                        .reduce("", PoemGenerator::joinElements))
+                .forEach(verse -> System.out.printf("%s%n", verse));
     }
 
+    private static boolean isStartingKey(Key<String> key) {
+        final String firstLetter = key.toString().substring(0, 1);
+        return StringUtils.isAllUpperCase(firstLetter);
+    }
+
+    private static String joinElements(String a, String b) {
+        final String lastLetterOfA = StringUtils.substring(a, -1);
+        final String firstLetterOfB = b.substring(0, 1);
+
+        if ((isAlpha(lastLetterOfA) && !PUNCTUATION.contains(firstLetterOfB)) || PUNCTUATION.contains(lastLetterOfA)) {
+            return a + " " + b;
+        } else {
+            return a + b;
+        }
+    }
 
     private static List<String> readAllLines(URL url) {
         try {
