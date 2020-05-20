@@ -25,17 +25,25 @@ public final class UnboundedMarkovChain<T> {
 
     public static <T> Collector<T, Accumulator<T>, UnboundedMarkovChain<T>> collector(int order, T terminalElement, Predicate<Key<T>> startingKeyCriteria) {
         return Collector.of(
-                () -> new Accumulator<>(order),
+                () -> new Accumulator<>(order, startingKeyCriteria),
                 Accumulator::accumulate,
                 Accumulator::combine,
-                accumulator -> new UnboundedMarkovChain<T>(accumulator, terminalElement, startingKeyCriteria));
+                accumulator -> new UnboundedMarkovChain<T>(accumulator, terminalElement));
+    }
+
+    public static <T> Collector<Iterable<T>, AccumulatorOfIterables<T>, UnboundedMarkovChain<T>> learnFromMultipleCorpus(int order, T terminalElement) {
+        return Collector.of(
+                () -> new AccumulatorOfIterables<>(order),
+                AccumulatorOfIterables::accumulateIterable,
+                AccumulatorOfIterables::combine,
+                accumulator -> new UnboundedMarkovChain<T>(accumulator, terminalElement));
     }
 
     private final T terminalElement;
     private final Map<Key<T>, EnumeratedDistribution<T>> chain;
     private final EnumeratedDistribution<Key<T>> startingKeys;
 
-    UnboundedMarkovChain(Accumulator<T> accumulator, T terminalElement, Predicate<Key<T>> startingKeyCriteria) {
+    UnboundedMarkovChain(AbstractAccumulator<T> accumulator, T terminalElement) {
         this.order = accumulator.order;
         this.chain = new HashMap<>(accumulator.chain.size());
         this.terminalElement = terminalElement;
@@ -48,8 +56,7 @@ public final class UnboundedMarkovChain<T> {
                             .collect(Collectors.toList())));
         });
 
-        this.startingKeys = new EnumeratedDistribution<>(chain.keySet().stream()
-                .filter(startingKeyCriteria)
+        this.startingKeys = new EnumeratedDistribution<>(accumulator.getStartingKeys().stream()
                 .map(key -> new Pair<>(key, 1d))
                 .collect(Collectors.toList()));
     }
@@ -76,15 +83,13 @@ public final class UnboundedMarkovChain<T> {
                 false);
     }
 
-    public static class Accumulator<T> {
+    public abstract static class AbstractAccumulator<T> {
 
-        private final int order;
+        protected final int order;
+        protected final DisplacementBuffer<T> buffer;
+        protected final Map<Key<T>, Multiset<T>> chain = new HashMap<>();
 
-        private final DisplacementBuffer<T> buffer;
-
-        private final Map<Key<T>, Multiset<T>> chain = new HashMap<>();
-
-        private Accumulator(int order) {
+        protected AbstractAccumulator(int order) {
             this.order = order;
             this.buffer = new DisplacementBuffer<>(order);
         }
@@ -98,25 +103,96 @@ public final class UnboundedMarkovChain<T> {
             buffer.add(token);
         }
 
-        public Accumulator<T> combine(Accumulator<T> other) {
+        public abstract Multiset<Key<T>> getStartingKeys();
+
+        protected void combine(AbstractAccumulator<T> other) {
             if (other.order != this.order) {
                 throw new IllegalArgumentException("Unable to combine Accumulators of different order");
             }
 
             other.chain.forEach((key, tokens) -> tokens.forEachEntry((token, count) -> put(key, token, count)));
-            return this;
         }
 
-        private void put(Key<T> key, T value) {
+        protected void put(Key<T> key, T value) {
             checkArgument(key.order() == order);
 
             chain.computeIfAbsent(key, any -> HashMultiset.create()).add(value);
+
         }
 
-        private void put(Key<T> key, T value, int count) {
+        protected void put(Key<T> key, T value, int count) {
             checkArgument(key.order() == order);
 
             chain.computeIfAbsent(key, any -> HashMultiset.create()).add(value, count);
+        }
+
+    }
+
+    public static class Accumulator<T> extends AbstractAccumulator<T> {
+
+        private final Predicate<Key<T>> startingKeyCriteria;
+        private final Multiset<Key<T>> startingKeys = HashMultiset.create();
+
+        private Accumulator(int order, Predicate<Key<T>> startingKeyCriteria) {
+            super(order);
+            this.startingKeyCriteria = startingKeyCriteria;
+        }
+
+        public Multiset<Key<T>> getStartingKeys() {
+            return startingKeys;
+        }
+
+        public Accumulator<T> combine(Accumulator<T> other) {
+            super.combine(other);
+            other.startingKeys.forEachEntry((key, count) -> this.startingKeys.add(key, count));
+            return this;
+        }
+
+        protected void put(Key<T> key, T value) {
+            super.put(key, value);
+            if (startingKeyCriteria.test(key)) {
+                startingKeys.add(key);
+            }
+        }
+
+    }
+
+    public static class AccumulatorOfIterables<T> extends AbstractAccumulator<T> {
+
+        private final Multiset<Key<T>> startingKeys = HashMultiset.create();
+
+        private AccumulatorOfIterables(int order) {
+            super(order);
+        }
+
+        public Multiset<Key<T>> getStartingKeys() {
+            return startingKeys;
+        }
+
+        public void accumulateIterable(Iterable<T> tokens) {
+            final DisplacementBuffer<T> keyBuffer = new DisplacementBuffer<>(order);
+            boolean noStartingKey = true;
+
+            for (T token : tokens) {
+                accumulate(token);
+
+                if (noStartingKey) {
+                    keyBuffer.add(token);
+                }
+
+                if (keyBuffer.isFull()) {
+                    startingKeys.add(new ArrayKey<>(keyBuffer.getData()));
+                    keyBuffer.clear();
+                    noStartingKey = false;
+                }
+
+            }
+        }
+
+        public AccumulatorOfIterables<T> combine(AccumulatorOfIterables<T> other) {
+            super.combine(other);
+            other.startingKeys.forEachEntry((key, count) -> this.startingKeys.add(key, count));
+            return this;
         }
 
     }

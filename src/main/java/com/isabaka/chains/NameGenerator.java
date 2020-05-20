@@ -1,36 +1,47 @@
 package com.isabaka.chains;
 
-import com.google.common.base.Joiner;
-import com.isabaka.chains.markov.MarkovChain;
-import com.isabaka.chains.markov.MarkovChainBuilder;
-import com.isabaka.chains.util.IterableString;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.stream.IntStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import com.isabaka.chains.markov.UnboundedMarkovChain;
+import com.isabaka.chains.util.ReadAllLines;
+import com.isabaka.chains.util.ResourceByName;
 
 public class NameGenerator {
 
-    public static void main(String[] args) throws IOException, URISyntaxException {
+    public static final String TERMINAL_ELEMENT = System.lineSeparator();
 
-        final MarkovChainBuilder<Character> builder = MarkovChainBuilder.newInstance(3, Character.MAX_VALUE);
+    public static void main(String[] args) {
 
-        try (Stream<String> names = Files.lines(Paths.get(NameGenerator.class.getResource("/names.ru").toURI()))) {
-            names.map(IterableString::asCharacters).forEach(builder::populate);
+        final UnboundedMarkovChain<String> markovChain = Stream.of("/names.ru")
+                .map(new ResourceByName())
+                .flatMap(new ReadAllLines())
+                .map(NameGenerator::lineToCharacters)
+                .collect(UnboundedMarkovChain.learnFromMultipleCorpus(3, TERMINAL_ELEMENT));
+
+        for (int i = 0; i < 25; i++) {
+            final String name = markovChain.stream(markovChain.randomStartingKey())
+                    .takeWhile(obj -> !TERMINAL_ELEMENT.equals(obj))
+                    .limit(25)
+                    .map(String::valueOf)
+                    .collect(Collectors.joining());
+
+            System.out.println(name);
         }
 
-        final MarkovChain<Character> chain = builder.build();
-        final Joiner letterJoiner = Joiner.on("");
-
-        IntStream.range(0, 25)
-                .mapToObj(i -> chain.asIterable(1000L))
-                .map(letterJoiner::join)
-                .forEach(System.out::println);
     }
 
+    private static List<String> lineToCharacters(String line) {
+        final ArrayList<String> characters = line.codePoints()
+                .mapToObj(c -> (char) c)
+                .map(String::valueOf)
+                .collect(Collectors.toCollection(ArrayList::new));
 
+        characters.add(TERMINAL_ELEMENT);
+
+        return characters;
+    }
 
 }
