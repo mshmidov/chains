@@ -6,7 +6,6 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -14,6 +13,8 @@ import java.util.stream.Stream;
 import com.google.common.collect.ImmutableSet;
 import com.isabaka.chains.markov.Key;
 import com.isabaka.chains.markov.UnboundedMarkovChain;
+import com.isabaka.chains.util.ReadAllLines;
+import com.isabaka.chains.util.ResourceByName;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -26,18 +27,19 @@ public class PoemGenerator {
     public static void main(String[] args) {
 
         final UnboundedMarkovChain<String> markovChain = Stream.of("/pop.txt", "/ryback.txt", "/rusl.txt")
-                .map(PoemGenerator.class::getResource)
-                .map(PoemGenerator::readAllLines)
-                .flatMap(Collection::stream)
+                .map(new ResourceByName())
+                .flatMap(new ReadAllLines())
                 .flatMap(line -> Arrays.stream(ArrayUtils.add(StringUtils.splitByCharacterTypeCamelCase(line), System.lineSeparator())))
                 .filter(element -> element.equals(System.lineSeparator()) || !StringUtils.isBlank(element))
                 .collect(UnboundedMarkovChain.collector(2, "." + System.lineSeparator(), PoemGenerator::isStartingKey));
 
-        IntStream.range(0, 25)
-                .mapToObj(i -> markovChain.stream(markovChain.randomStartingKey())
-                        .limit(35)
-                        .reduce("", PoemGenerator::joinElements))
-                .forEach(verse -> System.out.printf("%s%n", verse));
+        for (int i = 0; i < 25; i++) {
+            final String verse = markovChain.stream(markovChain.randomStartingKey())
+                    .limit(35)
+                    .reduce("", PoemGenerator::joinElements);
+
+            System.out.printf("%s%n", verse);
+        }
     }
 
     private static boolean isStartingKey(Key<String> key) {
@@ -55,13 +57,4 @@ public class PoemGenerator {
             return a + b;
         }
     }
-
-    private static List<String> readAllLines(URL url) {
-        try {
-            return Files.readAllLines(Paths.get(url.toURI()));
-        } catch (URISyntaxException | IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
 }
