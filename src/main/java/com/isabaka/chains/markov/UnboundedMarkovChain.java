@@ -11,9 +11,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
-import com.isabaka.chains.util.DisplacementBuffer;
 import org.apache.commons.math3.distribution.EnumeratedDistribution;
 import org.apache.commons.math3.util.Pair;
 
@@ -81,120 +78,6 @@ public final class UnboundedMarkovChain<T> {
         return StreamSupport.stream(
                 Spliterators.spliteratorUnknownSize(new UnboundedChainIterator<>(this, firstKey), Spliterator.IMMUTABLE),
                 false);
-    }
-
-    public abstract static class AbstractAccumulator<T> {
-
-        protected final int order;
-        protected final DisplacementBuffer<T> buffer;
-        protected final Map<Key<T>, Multiset<T>> chain = new HashMap<>();
-
-        protected AbstractAccumulator(int order) {
-            this.order = order;
-            this.buffer = new DisplacementBuffer<>(order);
-        }
-
-        public void accumulate(T token) {
-            if (buffer.isFull()) {
-                final Key<T> key = new ArrayKey<>(buffer.getData());
-                put(key, token);
-            }
-
-            buffer.add(token);
-        }
-
-        public abstract Multiset<Key<T>> getStartingKeys();
-
-        protected void combine(AbstractAccumulator<T> other) {
-            if (other.order != this.order) {
-                throw new IllegalArgumentException("Unable to combine Accumulators of different order");
-            }
-
-            other.chain.forEach((key, tokens) -> tokens.forEachEntry((token, count) -> put(key, token, count)));
-        }
-
-        protected void put(Key<T> key, T value) {
-            checkArgument(key.order() == order);
-
-            chain.computeIfAbsent(key, any -> HashMultiset.create()).add(value);
-
-        }
-
-        protected void put(Key<T> key, T value, int count) {
-            checkArgument(key.order() == order);
-
-            chain.computeIfAbsent(key, any -> HashMultiset.create()).add(value, count);
-        }
-
-    }
-
-    public static class Accumulator<T> extends AbstractAccumulator<T> {
-
-        private final Predicate<Key<T>> startingKeyCriteria;
-        private final Multiset<Key<T>> startingKeys = HashMultiset.create();
-
-        private Accumulator(int order, Predicate<Key<T>> startingKeyCriteria) {
-            super(order);
-            this.startingKeyCriteria = startingKeyCriteria;
-        }
-
-        public Multiset<Key<T>> getStartingKeys() {
-            return startingKeys;
-        }
-
-        public Accumulator<T> combine(Accumulator<T> other) {
-            super.combine(other);
-            other.startingKeys.forEachEntry((key, count) -> this.startingKeys.add(key, count));
-            return this;
-        }
-
-        protected void put(Key<T> key, T value) {
-            super.put(key, value);
-            if (startingKeyCriteria.test(key)) {
-                startingKeys.add(key);
-            }
-        }
-
-    }
-
-    public static class AccumulatorOfIterables<T> extends AbstractAccumulator<T> {
-
-        private final Multiset<Key<T>> startingKeys = HashMultiset.create();
-
-        private AccumulatorOfIterables(int order) {
-            super(order);
-        }
-
-        public Multiset<Key<T>> getStartingKeys() {
-            return startingKeys;
-        }
-
-        public void accumulateIterable(Iterable<T> tokens) {
-            final DisplacementBuffer<T> keyBuffer = new DisplacementBuffer<>(order);
-            boolean noStartingKey = true;
-
-            for (T token : tokens) {
-                accumulate(token);
-
-                if (noStartingKey) {
-                    keyBuffer.add(token);
-                }
-
-                if (keyBuffer.isFull()) {
-                    startingKeys.add(new ArrayKey<>(keyBuffer.getData()));
-                    keyBuffer.clear();
-                    noStartingKey = false;
-                }
-
-            }
-        }
-
-        public AccumulatorOfIterables<T> combine(AccumulatorOfIterables<T> other) {
-            super.combine(other);
-            other.startingKeys.forEachEntry((key, count) -> this.startingKeys.add(key, count));
-            return this;
-        }
-
     }
 
 }
