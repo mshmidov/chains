@@ -1,18 +1,20 @@
-package com.isabaka.chains.markov;
+package com.isabaka.chains.markov.training;
 
 import java.util.Collection;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
+import com.isabaka.chains.markov.ArrayKey;
+import com.isabaka.chains.markov.Key;
 
-public class FirstKeyOfCorpus<T> implements StartingKeysStrategy<T> {
+class FirstKeysOfCorpus<T> implements StaringKeysTraining<T> {
 
     private final int order;
 
     private final Multiset<Key<T>> startingKeys = HashMultiset.create();
 
-    public FirstKeyOfCorpus(int order) {
+    public FirstKeysOfCorpus(int order) {
         this.order = order;
     }
 

@@ -1,4 +1,4 @@
-package com.isabaka.chains.markov;
+package com.isabaka.chains.markov.training;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -7,6 +7,8 @@ import java.util.Objects;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
+import com.isabaka.chains.markov.ArrayKey;
+import com.isabaka.chains.markov.Key;
 import com.isabaka.chains.util.DisplacementBuffer;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -16,14 +18,14 @@ public class Training<T> {
     private final int order;
     private final DisplacementBuffer<T> buffer;
 
-    private final StartingKeysStrategy<T> startingKeysStrategy;
+    private final StaringKeysTraining<T> staringKeysTraining;
 
     private final Map<Key<T>, Multiset<T>> chain = new HashMap<>();
 
-    public Training(int order, StartingKeysStrategy<T> startingKeysStrategy) {
+    public Training(int order, StartingKeysExtraction<T> startingKeysExtraction) {
         this.order = order;
         this.buffer = new DisplacementBuffer<>(order);
-        this.startingKeysStrategy = startingKeysStrategy;
+        this.staringKeysTraining = startingKeysExtraction.forOrder(order);
     }
 
     public int getOrder() {
@@ -35,17 +37,17 @@ public class Training<T> {
     }
 
     public Multiset<Key<T>> getStartingKeys() {
-        return startingKeysStrategy.getStartingKeys();
+        return staringKeysTraining.getStartingKeys();
     }
 
     public void acceptElement(T element) {
         addToBuffer(element);
-        startingKeysStrategy.acceptElement(element);
+        staringKeysTraining.acceptElement(element);
     }
 
     public void acceptCorpus(Collection<T> elements) {
         elements.forEach(this::addToBuffer);
-        startingKeysStrategy.acceptCorpus(elements);
+        staringKeysTraining.acceptCorpus(elements);
     }
 
     private void addToBuffer(T element) {

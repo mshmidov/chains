@@ -4,7 +4,7 @@ import com.google.common.base.Joiner;
 
 import java.util.Arrays;
 
-final class ArrayKey<T> implements Key<T> {
+public final class ArrayKey<T> implements Key<T> {
 
     private static final Joiner JOINER = Joiner.on("");
 
@@ -12,7 +12,7 @@ final class ArrayKey<T> implements Key<T> {
 
     private final int hashCode;
 
-    ArrayKey(T[] values) {
+    public ArrayKey(T[] values) {
         this.values = Arrays.copyOf(values, values.length);
         this.hashCode = Arrays.hashCode(values);
     }

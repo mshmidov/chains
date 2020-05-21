@@ -1,20 +1,22 @@
-package com.isabaka.chains.markov;
+package com.isabaka.chains.markov.training;
 
 import java.util.Collection;
 import java.util.function.Predicate;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
+import com.isabaka.chains.markov.ArrayKey;
+import com.isabaka.chains.markov.Key;
 import com.isabaka.chains.util.DisplacementBuffer;
 
-public class AnyKeySatisfyingCondition<T> implements StartingKeysStrategy<T> {
+class AnyKeysSatisfyingCondition<T> implements StaringKeysTraining<T> {
 
     private final Predicate<Key<T>> condition;
 
     private final DisplacementBuffer<T> buffer;
     private final Multiset<Key<T>> startingKeys = HashMultiset.create();
 
-    public AnyKeySatisfyingCondition(int order, Predicate<Key<T>> condition) {
+    public AnyKeysSatisfyingCondition(int order, Predicate<Key<T>> condition) {
         this.condition = condition;
         this.buffer = new DisplacementBuffer<>(order);
     }

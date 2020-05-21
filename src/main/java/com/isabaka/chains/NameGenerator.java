@@ -5,8 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.isabaka.chains.markov.FirstKeyOfCorpus;
-import com.isabaka.chains.markov.Training;
+import com.isabaka.chains.markov.training.StartingKeys;
+import com.isabaka.chains.markov.training.Training;
 import com.isabaka.chains.markov.MarkovChain;
 import com.isabaka.chains.util.ReadAllLines;
 import com.isabaka.chains.util.ResourceByName;
@@ -17,7 +17,7 @@ public class NameGenerator {
 
     public static void main(String[] args) {
 
-        final Training<String> training = new Training<>(3, new FirstKeyOfCorpus<>(3));
+        final Training<String> training = new Training<>(3, StartingKeys.firstKeyOfCorpus());
 
         Stream.of("/names.ru")
                 .map(new ResourceByName())

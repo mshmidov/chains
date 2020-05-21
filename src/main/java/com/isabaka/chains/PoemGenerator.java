@@ -4,10 +4,10 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableSet;
-import com.isabaka.chains.markov.AnyKeySatisfyingCondition;
 import com.isabaka.chains.markov.Key;
-import com.isabaka.chains.markov.Training;
+import com.isabaka.chains.markov.training.StartingKeys;
 import com.isabaka.chains.markov.MarkovChain;
+import com.isabaka.chains.markov.training.Training;
 import com.isabaka.chains.util.ReadAllLines;
 import com.isabaka.chains.util.ResourceByName;
 import org.apache.commons.lang3.ArrayUtils;
@@ -21,7 +21,7 @@ public class PoemGenerator {
 
     public static void main(String[] args) {
 
-        final Training<String> training = new Training<>(2, new AnyKeySatisfyingCondition<>(2, PoemGenerator::isStartingKey));
+        final Training<String> training = new Training<>(2, StartingKeys.anyKeySatisfying(PoemGenerator::isStartingKey));
 
         Stream.of("/pop.txt", "/ryback.txt", "/rusl.txt")
                 .map(new ResourceByName())
@@ -30,7 +30,7 @@ public class PoemGenerator {
                 .filter(element -> element.equals(System.lineSeparator()) || !StringUtils.isBlank(element))
                 .forEach(training::acceptElement);
 
-        final MarkovChain<String> markovChain = new MarkovChain<>(training,"." + System.lineSeparator());
+        final MarkovChain<String> markovChain = new MarkovChain<>(training, "." + System.lineSeparator());
 
         for (int i = 0; i < 25; i++) {
             final String verse = markovChain.stream(markovChain.randomStartingKey())
@@ -56,4 +56,5 @@ public class PoemGenerator {
             return a + b;
         }
     }
+
 }
