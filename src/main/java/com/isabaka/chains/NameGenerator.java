@@ -5,7 +5,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.isabaka.chains.markov.UnboundedMarkovChain;
+import com.isabaka.chains.markov.FirstKeyOfCorpus;
+import com.isabaka.chains.markov.Training;
+import com.isabaka.chains.markov.MarkovChain;
 import com.isabaka.chains.util.ReadAllLines;
 import com.isabaka.chains.util.ResourceByName;
 
@@ -15,11 +17,15 @@ public class NameGenerator {
 
     public static void main(String[] args) {
 
-        final UnboundedMarkovChain<String> markovChain = Stream.of("/names.ru")
+        final Training<String> training = new Training<>(3, new FirstKeyOfCorpus<>(3));
+
+        Stream.of("/names.ru")
                 .map(new ResourceByName())
                 .flatMap(new ReadAllLines())
                 .map(NameGenerator::lineToCharacters)
-                .collect(UnboundedMarkovChain.learnFromMultipleCorpus(3, TERMINAL_ELEMENT));
+                .forEach(training::acceptCorpus);
+
+        final MarkovChain<String> markovChain = new MarkovChain<>(training, TERMINAL_ELEMENT);
 
         for (int i = 0; i < 25; i++) {
             final String name = markovChain.stream(markovChain.randomStartingKey())

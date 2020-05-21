@@ -1,18 +1,13 @@
 package com.isabaka.chains;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import com.google.common.collect.ImmutableSet;
+import com.isabaka.chains.markov.AnyKeySatisfyingCondition;
 import com.isabaka.chains.markov.Key;
-import com.isabaka.chains.markov.UnboundedMarkovChain;
+import com.isabaka.chains.markov.Training;
+import com.isabaka.chains.markov.MarkovChain;
 import com.isabaka.chains.util.ReadAllLines;
 import com.isabaka.chains.util.ResourceByName;
 import org.apache.commons.lang3.ArrayUtils;
@@ -26,12 +21,16 @@ public class PoemGenerator {
 
     public static void main(String[] args) {
 
-        final UnboundedMarkovChain<String> markovChain = Stream.of("/pop.txt", "/ryback.txt", "/rusl.txt")
+        final Training<String> training = new Training<>(2, new AnyKeySatisfyingCondition<>(2, PoemGenerator::isStartingKey));
+
+        Stream.of("/pop.txt", "/ryback.txt", "/rusl.txt")
                 .map(new ResourceByName())
                 .flatMap(new ReadAllLines())
                 .flatMap(line -> Arrays.stream(ArrayUtils.add(StringUtils.splitByCharacterTypeCamelCase(line), System.lineSeparator())))
                 .filter(element -> element.equals(System.lineSeparator()) || !StringUtils.isBlank(element))
-                .collect(UnboundedMarkovChain.collector(2, "." + System.lineSeparator(), PoemGenerator::isStartingKey));
+                .forEach(training::acceptElement);
+
+        final MarkovChain<String> markovChain = new MarkovChain<>(training,"." + System.lineSeparator());
 
         for (int i = 0; i < 25; i++) {
             final String verse = markovChain.stream(markovChain.randomStartingKey())
