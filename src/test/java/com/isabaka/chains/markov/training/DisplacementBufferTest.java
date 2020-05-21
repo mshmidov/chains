@@ -1,9 +1,10 @@
-package com.isabaka.chains.util;
+package com.isabaka.chains.markov.training;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.collect.ImmutableList;
+import com.isabaka.chains.markov.training.DisplacementBuffer;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;

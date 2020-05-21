@@ -25,7 +25,7 @@ public class NameGenerator {
                 .map(NameGenerator::lineToCharacters)
                 .forEach(training::acceptCorpus);
 
-        final MarkovChain<String> markovChain = new MarkovChain<>(training, TERMINAL_ELEMENT);
+        final MarkovChain<String> markovChain = new MarkovChain<>(training.finishTraining(), TERMINAL_ELEMENT);
 
         for (int i = 0; i < 25; i++) {
             final String name = markovChain.stream(markovChain.randomStartingKey())

@@ -2,15 +2,15 @@ package com.isabaka.chains.markov.training;
 
 import java.util.Collection;
 
-import com.google.common.collect.Multiset;
 import com.isabaka.chains.markov.Key;
+import com.isabaka.chains.markov.data.Probabilities;
 
-public interface StaringKeysTraining<T> {
+public interface StaringKeysTrainingData<T> {
 
     void acceptElement(T element);
 
     void acceptCorpus(Collection<T> elements);
 
-    Multiset<Key<T>> getStartingKeys();
+    Probabilities<Key<T>> getStartingKeys();
 
 }

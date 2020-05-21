@@ -1,15 +1,13 @@
 package com.isabaka.chains.markov.training;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
 import com.isabaka.chains.markov.ArrayKey;
 import com.isabaka.chains.markov.Key;
-import com.isabaka.chains.util.DisplacementBuffer;
+import com.isabaka.chains.markov.data.FinishedTraining;
+import com.isabaka.chains.markov.data.Probabilities;
+import com.isabaka.chains.markov.data.TrainingData;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -18,13 +16,13 @@ public class Training<T> {
     private final int order;
     private final DisplacementBuffer<T> buffer;
 
-    private final StaringKeysTraining<T> staringKeysTraining;
-
-    private final Map<Key<T>, Multiset<T>> chain = new HashMap<>();
+    private final TrainingData<T> trainingData;
+    private final StaringKeysTrainingData<T> staringKeysTraining;
 
     public Training(int order, StartingKeysExtraction<T> startingKeysExtraction) {
         this.order = order;
         this.buffer = new DisplacementBuffer<>(order);
+        this.trainingData = new TrainingData<>();
         this.staringKeysTraining = startingKeysExtraction.forOrder(order);
     }
 
@@ -32,12 +30,8 @@ public class Training<T> {
         return order;
     }
 
-    public Map<Key<T>, Multiset<T>> getChain() {
-        return chain;
-    }
-
-    public Multiset<Key<T>> getStartingKeys() {
-        return staringKeysTraining.getStartingKeys();
+    public FinishedTraining<T> finishTraining() {
+        return new FinishedTraining<>(order, trainingData, staringKeysTraining.getStartingKeys().map(trainingData::getKeyIndex));
     }
 
     public void acceptElement(T element) {
@@ -61,9 +55,9 @@ public class Training<T> {
         buffer.add(element);
     }
 
-    private void addToChain(Key<T> key, T value) {
+    private void addToChain(Key<T> key, T element) {
         checkArgument(key.order() == order);
-
-        chain.computeIfAbsent(key, any -> HashMultiset.create()).add(value);
+        trainingData.addToChain(key, element);
     }
+
 }

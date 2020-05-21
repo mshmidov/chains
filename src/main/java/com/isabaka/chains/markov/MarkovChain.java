@@ -1,6 +1,5 @@
 package com.isabaka.chains.markov;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Spliterator;
@@ -9,36 +8,26 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import com.isabaka.chains.markov.training.Training;
+import com.isabaka.chains.markov.data.FinishedTraining;
+import com.isabaka.chains.markov.data.TrainingData;
+import com.isabaka.chains.markov.data.TrainingUnpacker;
 import org.apache.commons.math3.distribution.EnumeratedDistribution;
 import org.apache.commons.math3.util.Pair;
-
-import static com.google.common.base.Preconditions.checkArgument;
 
 public final class MarkovChain<T> {
 
     private final int order;
-
-    private final T terminalElement;
     private final Map<Key<T>, EnumeratedDistribution<T>> chain;
     private final EnumeratedDistribution<Key<T>> startingKeys;
+    private final T terminalElement;
 
-    public MarkovChain(Training<T> training, T terminalElement) {
-        this.order = training.getOrder();
-        this.chain = new HashMap<>(training.getChain().size());
+    public MarkovChain(FinishedTraining<T> finishedTraining, T terminalElement) {
+        final TrainingUnpacker<T> unpacker = new TrainingUnpacker<>(finishedTraining);
+
+        this.order = unpacker.getOrder();
+        this.chain = unpacker.getChain();
+        this.startingKeys = unpacker.getStartingKeys();
         this.terminalElement = terminalElement;
-
-        training.getChain().forEach((key, data) -> {
-            final double size = data.size();
-            chain.put(key,
-                    new EnumeratedDistribution<>(data.entrySet().stream()
-                            .map(entry -> new Pair<>(entry.getElement(), entry.getCount() / size))
-                            .collect(Collectors.toList())));
-        });
-
-        this.startingKeys = new EnumeratedDistribution<>(training.getStartingKeys().stream()
-                .map(key -> new Pair<>(key, 1d))
-                .collect(Collectors.toList()));
     }
 
     public int getOrder() {

@@ -1,8 +1,8 @@
-package com.isabaka.chains.util;
+package com.isabaka.chains.markov.training;
 
 import java.util.ArrayDeque;
 
-public final class DisplacementBuffer<T> {
+final class DisplacementBuffer<T> {
 
     private final ArrayDeque<T> data;
 

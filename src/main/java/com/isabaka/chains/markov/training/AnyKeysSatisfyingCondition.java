@@ -3,18 +3,16 @@ package com.isabaka.chains.markov.training;
 import java.util.Collection;
 import java.util.function.Predicate;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
 import com.isabaka.chains.markov.ArrayKey;
 import com.isabaka.chains.markov.Key;
-import com.isabaka.chains.util.DisplacementBuffer;
+import com.isabaka.chains.markov.data.Probabilities;
 
-class AnyKeysSatisfyingCondition<T> implements StaringKeysTraining<T> {
+class AnyKeysSatisfyingCondition<T> implements StaringKeysTrainingData<T> {
 
     private final Predicate<Key<T>> condition;
 
     private final DisplacementBuffer<T> buffer;
-    private final Multiset<Key<T>> startingKeys = HashMultiset.create();
+    private final Probabilities<Key<T>> startingKeys = new Probabilities<>();
 
     public AnyKeysSatisfyingCondition(int order, Predicate<Key<T>> condition) {
         this.condition = condition;
@@ -39,7 +37,7 @@ class AnyKeysSatisfyingCondition<T> implements StaringKeysTraining<T> {
     }
 
     @Override
-    public Multiset<Key<T>> getStartingKeys() {
+    public Probabilities<Key<T>> getStartingKeys() {
         return startingKeys;
     }
 

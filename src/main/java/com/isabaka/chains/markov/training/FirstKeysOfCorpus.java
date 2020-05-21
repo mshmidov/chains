@@ -3,16 +3,15 @@ package com.isabaka.chains.markov.training;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
 import com.isabaka.chains.markov.ArrayKey;
 import com.isabaka.chains.markov.Key;
+import com.isabaka.chains.markov.data.Probabilities;
 
-class FirstKeysOfCorpus<T> implements StaringKeysTraining<T> {
+class FirstKeysOfCorpus<T> implements StaringKeysTrainingData<T> {
 
     private final int order;
 
-    private final Multiset<Key<T>> startingKeys = HashMultiset.create();
+    private final Probabilities<Key<T>> startingKeys = new Probabilities<>();
 
     public FirstKeysOfCorpus(int order) {
         this.order = order;
@@ -31,7 +30,7 @@ class FirstKeysOfCorpus<T> implements StaringKeysTraining<T> {
     }
 
     @Override
-    public Multiset<Key<T>> getStartingKeys() {
+    public Probabilities<Key<T>> getStartingKeys() {
         return startingKeys;
     }
 
