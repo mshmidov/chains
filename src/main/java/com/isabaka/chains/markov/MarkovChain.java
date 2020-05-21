@@ -16,9 +16,8 @@ public final class MarkovChain<T> {
     private final int order;
     private final Map<Key<T>, EnumeratedDistribution<T>> chain;
     private final EnumeratedDistribution<Key<T>> startingKeys;
-    private final T terminalElement;
 
-    public MarkovChain(Training<T> training, T terminalElement) {
+    public MarkovChain(Training<T> training) {
 
         this.order = training.getOrder();
 
@@ -28,15 +27,10 @@ public final class MarkovChain<T> {
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().toEnumeratedDistribution()));
 
         this.startingKeys = training.getStaringKeys().toEnumeratedDistribution();
-        this.terminalElement = terminalElement;
     }
 
     public int getOrder() {
         return order;
-    }
-
-    public T getTerminalElement() {
-        return terminalElement;
     }
 
     public Key<T> randomStartingKey() {
@@ -47,9 +41,9 @@ public final class MarkovChain<T> {
         return Optional.ofNullable(chain.get(nextKey)).map(EnumeratedDistribution::sample);
     }
 
-    public Stream<T> stream(Key<T> firstKey) {
+    public Stream<T> stream(Key<T> firstKey, T terminalElement) {
         return StreamSupport.stream(
-                Spliterators.spliteratorUnknownSize(new InfiniteChainIterator<>(this, firstKey), Spliterator.IMMUTABLE),
+                Spliterators.spliteratorUnknownSize(new InfiniteChainIterator<>(this, firstKey, terminalElement), Spliterator.IMMUTABLE),
                 false);
     }
 

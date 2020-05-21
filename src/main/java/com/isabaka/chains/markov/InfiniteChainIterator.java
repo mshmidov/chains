@@ -10,10 +10,13 @@ final class InfiniteChainIterator<T> implements Iterator<T> {
 
     private final MarkovChain<T> markovChain;
 
+    private final T terminalElement;
+
     private Deque<T> buffer = new ArrayDeque<>();
 
-    public InfiniteChainIterator(MarkovChain<T> markovChain, Key<T> firstKey) {
+    public InfiniteChainIterator(MarkovChain<T> markovChain, Key<T> firstKey, T terminalElement) {
         this.markovChain = requireNonNull(markovChain);
+        this.terminalElement = terminalElement;
 
         buffer.addAll(firstKey.values());
     }
@@ -30,7 +33,7 @@ final class InfiniteChainIterator<T> implements Iterator<T> {
             markovChain.nextToken(key).ifPresentOrElse(
                     buffer::add,
                     () -> {
-                        buffer.add((markovChain.getTerminalElement()));
+                        buffer.add(terminalElement);
                         buffer.addAll(markovChain.randomStartingKey().values());
                     });
         }
