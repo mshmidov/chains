@@ -3,9 +3,7 @@ package com.isabaka.chains.markov.training;
 import java.util.List;
 import java.util.Map;
 
-import com.isabaka.chains.markov.ArrayKey;
 import com.isabaka.chains.markov.Key;
-import com.isabaka.chains.markov.training.Probabilities;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,8 +15,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class TrainingTest {
 
     @Test
-    @DisplayName("should store probabilities")
-    void shouldStoreProbabilities() {
+    @DisplayName("should train on data")
+    void shouldTrainOnData() {
         // given
         final Training<String> training = new Training<>(1, StartingKeys.firstKeyOfCorpus());
 
@@ -40,10 +38,14 @@ class TrainingTest {
         final Map<Key<String>, Probabilities<String>> trainingData = training.getTrainingData();
 
         //
-        final ArrayKey<String> keyA = new ArrayKey<>(new String[] {"A"});
-        final ArrayKey<String> keyB = new ArrayKey<>(new String[] {"B"});
+        final Key<String> keyA = new Key<>("A");
+        final Key<String> keyB = new Key<>("B");
 
         assertThat(trainingData.get(keyA).getElements()).containsExactlyInAnyOrder("1", "2", "2", "3", "3", "3");
         assertThat(trainingData.get(keyB).getElements()).containsExactlyInAnyOrder("b1", "b2", "b2", "b3", "b3", "b3");
+
+        assertThat(training.getStaringKeys().getElements()).containsExactlyInAnyOrder(
+                keyA, keyA, keyA, keyA, keyA, keyA,
+                keyB, keyB, keyB, keyB, keyB, keyB);
     }
 }

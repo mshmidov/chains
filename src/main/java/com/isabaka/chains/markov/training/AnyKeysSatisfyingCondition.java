@@ -3,7 +3,6 @@ package com.isabaka.chains.markov.training;
 import java.util.Collection;
 import java.util.function.Predicate;
 
-import com.isabaka.chains.markov.ArrayKey;
 import com.isabaka.chains.markov.Key;
 
 class AnyKeysSatisfyingCondition<T> implements StaringKeysTrainingData<T> {
@@ -21,7 +20,7 @@ class AnyKeysSatisfyingCondition<T> implements StaringKeysTrainingData<T> {
     @Override
     public void acceptElement(T element) {
         if (buffer.isFull()) {
-            final Key<T> key = new ArrayKey<>(buffer.getData());
+            final Key<T> key = new Key<T>(buffer.getData());
             if (condition.test(key)) {
                 startingKeys.add(key);
             }

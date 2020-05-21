@@ -1,7 +1,6 @@
 package com.isabaka.chains.markov;
 
 import java.util.ArrayDeque;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.Iterator;
 
@@ -16,7 +15,7 @@ final class InfiniteChainIterator<T> implements Iterator<T> {
     public InfiniteChainIterator(MarkovChain<T> markovChain, Key<T> firstKey) {
         this.markovChain = requireNonNull(markovChain);
 
-        Collections.addAll(buffer, firstKey.values());
+        buffer.addAll(firstKey.values());
     }
 
     @Override
@@ -27,12 +26,12 @@ final class InfiniteChainIterator<T> implements Iterator<T> {
     @Override
     public T next() {
         if (buffer.size() == markovChain.getOrder()) {
-            final ArrayKey<T> key = new ArrayKey(buffer.toArray());
+            final Key<T> key = new Key<T>(buffer);
             markovChain.nextToken(key).ifPresentOrElse(
                     buffer::add,
                     () -> {
                         buffer.add((markovChain.getTerminalElement()));
-                        Collections.addAll(buffer, markovChain.randomStartingKey().values());
+                        buffer.addAll(markovChain.randomStartingKey().values());
                     });
         }
 

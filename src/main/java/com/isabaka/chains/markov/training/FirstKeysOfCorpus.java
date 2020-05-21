@@ -3,7 +3,6 @@ package com.isabaka.chains.markov.training;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
-import com.isabaka.chains.markov.ArrayKey;
 import com.isabaka.chains.markov.Key;
 
 class FirstKeysOfCorpus<T> implements StaringKeysTrainingData<T> {
@@ -24,7 +23,7 @@ class FirstKeysOfCorpus<T> implements StaringKeysTrainingData<T> {
     @Override
     public void acceptCorpus(Collection<T> elements) {
         if (elements.size() >= order) {
-            startingKeys.add(new ArrayKey<T>((T[]) elements.stream().limit(order).collect(Collectors.toList()).toArray()));
+            startingKeys.add(new Key<>(elements.stream().limit(order).collect(Collectors.toList())));
         }
     }
 

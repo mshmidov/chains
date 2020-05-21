@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import com.isabaka.chains.markov.ArrayKey;
 import com.isabaka.chains.markov.Key;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -51,7 +50,7 @@ public class Training<T> {
         Objects.requireNonNull(element);
 
         if (buffer.isFull()) {
-            final Key<T> key = new ArrayKey<>(buffer.getData());
+            final Key<T> key = new Key<>(buffer.getData());
             addToChain(key, element);
         }
 
