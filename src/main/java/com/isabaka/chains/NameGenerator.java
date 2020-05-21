@@ -22,7 +22,9 @@ public class NameGenerator {
 
     public static void main(String[] args) {
 
-        new NameGenerator(Stream.of("/seed/names/russia/names-slavic-m.txt").map(new ResourceByName()))
+        new NameGenerator(Stream.of("/seed/names/russia/names-slavic-m.txt",
+                "/seed/names/russia/names-russia-latin-m.txt")
+                .map(new ResourceByName()))
                 .generateNames(100000, 50)
                 .forEach(System.out::println);
 
