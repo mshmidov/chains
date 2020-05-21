@@ -5,7 +5,6 @@ import java.util.function.Predicate;
 
 import com.isabaka.chains.markov.ArrayKey;
 import com.isabaka.chains.markov.Key;
-import com.isabaka.chains.markov.data.Probabilities;
 
 class AnyKeysSatisfyingCondition<T> implements StaringKeysTrainingData<T> {
 

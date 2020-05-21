@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 import com.isabaka.chains.markov.ArrayKey;
 import com.isabaka.chains.markov.Key;
-import com.isabaka.chains.markov.data.Probabilities;
 
 class FirstKeysOfCorpus<T> implements StaringKeysTrainingData<T> {
 

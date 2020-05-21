@@ -8,11 +8,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-import com.isabaka.chains.markov.data.FinishedTraining;
-import com.isabaka.chains.markov.data.TrainingData;
-import com.isabaka.chains.markov.data.TrainingUnpacker;
+import com.isabaka.chains.markov.training.Training;
 import org.apache.commons.math3.distribution.EnumeratedDistribution;
-import org.apache.commons.math3.util.Pair;
 
 public final class MarkovChain<T> {
 
@@ -21,12 +18,16 @@ public final class MarkovChain<T> {
     private final EnumeratedDistribution<Key<T>> startingKeys;
     private final T terminalElement;
 
-    public MarkovChain(FinishedTraining<T> finishedTraining, T terminalElement) {
-        final TrainingUnpacker<T> unpacker = new TrainingUnpacker<>(finishedTraining);
+    public MarkovChain(Training<T> training, T terminalElement) {
 
-        this.order = unpacker.getOrder();
-        this.chain = unpacker.getChain();
-        this.startingKeys = unpacker.getStartingKeys();
+        this.order = training.getOrder();
+
+        this.chain = training.getTrainingData()
+                .entrySet()
+                .stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> e.getValue().toEnumeratedDistribution()));
+
+        this.startingKeys = training.getStaringKeys().toEnumeratedDistribution();
         this.terminalElement = terminalElement;
     }
 

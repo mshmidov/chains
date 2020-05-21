@@ -1,4 +1,4 @@
-package com.isabaka.chains.markov.data;
+package com.isabaka.chains.markov.training;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,13 +1,12 @@
 package com.isabaka.chains.markov.training;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import com.isabaka.chains.markov.ArrayKey;
 import com.isabaka.chains.markov.Key;
-import com.isabaka.chains.markov.data.FinishedTraining;
-import com.isabaka.chains.markov.data.Probabilities;
-import com.isabaka.chains.markov.data.TrainingData;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
@@ -16,13 +15,13 @@ public class Training<T> {
     private final int order;
     private final DisplacementBuffer<T> buffer;
 
-    private final TrainingData<T> trainingData;
+    private Map<Key<T>, Probabilities<T>> trainingData;
     private final StaringKeysTrainingData<T> staringKeysTraining;
 
     public Training(int order, StartingKeysExtraction<T> startingKeysExtraction) {
         this.order = order;
         this.buffer = new DisplacementBuffer<>(order);
-        this.trainingData = new TrainingData<>();
+        this.trainingData = new HashMap<>();
         this.staringKeysTraining = startingKeysExtraction.forOrder(order);
     }
 
@@ -30,8 +29,12 @@ public class Training<T> {
         return order;
     }
 
-    public FinishedTraining<T> finishTraining() {
-        return new FinishedTraining<>(order, trainingData, staringKeysTraining.getStartingKeys().map(trainingData::getKeyIndex));
+    public Map<Key<T>, Probabilities<T>> getTrainingData() {
+        return trainingData;
+    }
+
+    public Probabilities<Key<T>> getStaringKeys() {
+        return staringKeysTraining.getStartingKeys();
     }
 
     public void acceptElement(T element) {
@@ -57,7 +60,6 @@ public class Training<T> {
 
     private void addToChain(Key<T> key, T element) {
         checkArgument(key.order() == order);
-        trainingData.addToChain(key, element);
+        trainingData.computeIfAbsent(key, k -> new Probabilities<>()).add(element);
     }
-
 }

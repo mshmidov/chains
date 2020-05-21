@@ -30,7 +30,7 @@ public class PoemGenerator {
                 .filter(element -> element.equals(System.lineSeparator()) || !StringUtils.isBlank(element))
                 .forEach(training::acceptElement);
 
-        final MarkovChain<String> markovChain = new MarkovChain<>(training.finishTraining(), "." + System.lineSeparator());
+        final MarkovChain<String> markovChain = new MarkovChain<>(training, "." + System.lineSeparator());
 
         for (int i = 0; i < 25; i++) {
             final String verse = markovChain.stream(markovChain.randomStartingKey())
